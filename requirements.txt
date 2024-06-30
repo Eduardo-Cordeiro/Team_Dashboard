@@ -1,8 +1,5 @@
 streamlit
 pandas
 requests
-StringIO
 streamlit
-streamlit.components.v1
 seaborn
-matplotlib.pyplot
