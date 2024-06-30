@@ -20,9 +20,7 @@ qtd_jira = pd.DataFrame()
 qtd_jira['Projeto'] = jira['Chave do projeto'].value_counts().index 
 qtd_jira['Quantidade'] = jira['Chave do projeto'].value_counts().values
 
-fig = px.pie(qtd_jira, x='Projeto', y='Quantidade', barmode='group')
+fig = px.pie(qtd_jira, names='Projeto', valeus='Quantidade', title='Distribuição dos Projetos')
 
 # Display the bar chart
 st.plotly_chart(fig)
-
-
