@@ -24,15 +24,6 @@ fig.update_traces(marker_color='lightskyblue', selector=dict(type='bar'))
 # Display the initial bar chart
 st.plotly_chart(fig)
 
-# Inject custom CSS to style the buttons
-st.markdown("""
-    <style>
-    .stButton button {
-        font-size: 10px;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
 # Initialize session state for each project's table visibility
 for project in qtd_jira['Projeto']:
     if f'show_{project}' not in st.session_state:
