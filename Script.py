@@ -29,7 +29,7 @@ st.plotly_chart(fig)
 for project in qtd_jira['Projeto']:
     if st.button(f'Show details for {project}'):
         # Function to create a new bar chart based on selected project
-        st.table(jira[jira["Chave do projeto"] == project].head(20))
+        st.table(jira[jira["Chave do projeto"] == project][["Chave do item","Prioridade","Solicitante","Criado"]].head(20))
 
         # Display the detailed chart for the selected project
        
