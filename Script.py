@@ -35,7 +35,7 @@ def toggle_table(project):
 
 # Create buttons for each project
 for project in qtd_jira['Projeto']:
-    if st.button(f'Show/Hide details for {project}', key=f'button_{project}', on_click=toggle_table, args=(project,)):
+    if st.button(f'Detalhes {project}', key=f'button_{project}', on_click=toggle_table, args=(project,)):
         pass
 
     # Display the table based on the visibility state
