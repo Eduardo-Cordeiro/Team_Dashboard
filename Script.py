@@ -28,7 +28,7 @@ st.plotly_chart(fig)
 st.markdown("""
     <style>
     .stButton button {
-        font-size: 20px;
+        font-size: 16px;
     }
     </style>
 """, unsafe_allow_html=True)
