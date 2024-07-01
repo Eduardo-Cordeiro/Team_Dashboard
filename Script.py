@@ -26,7 +26,7 @@ fig.update_traces(marker_color='lightskyblue', selector=dict(type='bar'))
 st.plotly_chart(fig)
 
 # Buttons title
-st.markdown("Preview tabelas por Projeto")
+st.markdown("Dataframes por Projeto")
 
 # Initialize session state for each project's table visibility
 for project in qtd_jira['Projeto']:
