@@ -29,13 +29,7 @@ st.plotly_chart(fig)
 for project in qtd_jira['Projeto']:
     if st.button(f'Show details for {project}'):
         # Function to create a new bar chart based on selected project
-        def create_detailed_bar_chart(selected_project):
-            filtered_data = jira[jira['Chave do projeto'] == selected_project]
-            issue_counts = filtered_data['Tipo de issue'].value_counts()
-            detailed_fig = px.bar(issue_counts, x=issue_counts.index, y=issue_counts.values, title=f'Detalhes do Projeto: {selected_project}')
-            detailed_fig.update_traces(marker_color='lightcoral', selector=dict(type='bar'))
-            return detailed_fig
+        st.table(jira[jira["Chave do projeto"] == project])
 
         # Display the detailed chart for the selected project
-        detailed_fig = create_detailed_bar_chart(project)
-        st.plotly_chart(detailed_fig)
+       
