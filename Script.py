@@ -39,7 +39,7 @@ columns = st.columns(len(qtd_jira['Projeto']))
 # Create buttons for each project and place them in columns
 for i, project in enumerate(qtd_jira['Projeto']):
     with columns[i]:
-        if st.button(f'Detalhes {project}', key=f'button_{project}', on_click=toggle_table, args=(project,)):
+        if st.button(f'Tabela {project}', key=f'button_{project}', on_click=toggle_table, args=(project,)):
             pass
 
     # Display the table based on the visibility state
