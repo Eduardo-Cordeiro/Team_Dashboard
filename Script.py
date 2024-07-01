@@ -3,7 +3,6 @@ import requests
 from io import StringIO
 import streamlit as st
 import plotly.express as px
-import plotly.graph_objects as go
 
 # Load data from URL
 url1 = 'https://raw.githubusercontent.com/Eduardo-Cordeiro/Team_Dashboard/main/Jira_Data.csv'
@@ -25,11 +24,20 @@ fig.update_traces(marker_color='lightskyblue', selector=dict(type='bar'))
 # Display the initial bar chart
 st.plotly_chart(fig)
 
+# Initialize session state for each project's table visibility
+for project in qtd_jira['Projeto']:
+    if f'show_{project}' not in st.session_state:
+        st.session_state[f'show_{project}'] = False
+
+# Function to toggle table visibility
+def toggle_table(project):
+    st.session_state[f'show_{project}'] = not st.session_state[f'show_{project}']
+
 # Create buttons for each project
 for project in qtd_jira['Projeto']:
-    if st.button(f'Show details for {project}'):
-        # Function to create a new bar chart based on selected project
-        st.table(jira[jira["Chave do projeto"] == project][["Chave do item","Prioridade","Solicitante","Criado"]].head(20))
+    if st.button(f'Show/Hide details for {project}', key=f'button_{project}', on_click=toggle_table, args=(project,)):
+        pass
 
-        # Display the detailed chart for the selected project
-       
+    # Display the table based on the visibility state
+    if st.session_state[f'show_{project}']:
+        st.table(jira[jira["Chave do projeto"] == project][["Chave do item","Prioridade","Solicitante","Criado"]].head(20))
