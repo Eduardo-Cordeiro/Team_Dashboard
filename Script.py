@@ -10,6 +10,7 @@ response1 = requests.get(url1)
 response1.raise_for_status()
 csv_content1 = response1.text
 jira = pd.read_csv(StringIO(csv_content1), delimiter=',')
+jira["Chave do projeto"] = jira["Chave do projeto"].apply(lambda x: "PHON" if x == "PHONE" else x) 
 
 st.title("Jira Dashboard")
 
