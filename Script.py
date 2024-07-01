@@ -33,10 +33,14 @@ for project in qtd_jira['Projeto']:
 def toggle_table(project):
     st.session_state[f'show_{project}'] = not st.session_state[f'show_{project}']
 
-# Create buttons for each project
-for project in qtd_jira['Projeto']:
-    if st.button(f'Detalhes {project}', key=f'button_{project}', on_click=toggle_table, args=(project,)):
-        pass
+# Create columns for buttons
+columns = st.columns(len(qtd_jira['Projeto']))
+
+# Create buttons for each project and place them in columns
+for i, project in enumerate(qtd_jira['Projeto']):
+    with columns[i]:
+        if st.button(f'Show/Hide {project}', key=f'button_{project}', on_click=toggle_table, args=(project,)):
+            pass
 
     # Display the table based on the visibility state
     if st.session_state[f'show_{project}']:
