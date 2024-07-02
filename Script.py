@@ -19,6 +19,7 @@ qtd_jira = pd.DataFrame()
 qtd_jira['Projeto'] = jira['Chave do projeto'].value_counts().index
 qtd_jira['Quantidade'] = jira['Chave do projeto'].value_counts().values
 
+
 fig = px.bar(qtd_jira, x='Projeto', y='Quantidade', title='Distribuição dos Projetos')
 fig.update_traces(marker_color='lightskyblue', selector=dict(type='bar'))
 
@@ -26,26 +27,40 @@ fig.update_traces(marker_color='lightskyblue', selector=dict(type='bar'))
 st.plotly_chart(fig)
 
 # Buttons title
-st.markdown("Dataframes por Projeto")
+st.markdown("### Dataframes por Projeto")
+st.markdown("Selecione o Projeto e visualize as pricipais informações sobre as issues.")
 
 # Initialize session state for each project's table visibility
 for project in qtd_jira['Projeto']:
     if f'show_{project}' not in st.session_state:
         st.session_state[f'show_{project}'] = False
+        st.session_state[f'show_{"PLAT"}'] = True
 
-# Function to toggle table visibility
-def toggle_table(project):
-    st.session_state[f'show_{project}'] = not st.session_state[f'show_{project}']
+# Create a list of options for the dropdown
+options = qtd_jira['Projeto']
 
-# Create columns for buttons
-columns = st.columns(len(qtd_jira['Projeto']))
+# Create the dropdown menu
+selected_option = st.selectbox('Projetos:', options)
 
-# Create buttons for each project and place them in columns
-for i, project in enumerate(qtd_jira['Projeto']):
-    with columns[i]:
-        if st.button(f'{project}', key=f'button_{project}', on_click=toggle_table, args=(project,)):
-            pass
+# Display the selected option
+st.dataframe(jira[jira["Chave do projeto"] == selected_option][["Chave do item","Solicitante","Prioridade","Criado"]],hide_index=True,use_container_width=True)
 
-    # Display the table based on the visibility state
-    if st.session_state[f'show_{project}']:
-        st.dataframe(jira[jira["Chave do projeto"] == project][["Chave do item","Solicitante","Prioridade","Criado"]],hide_index=True,use_container_width=True)
+
+# Main categories per project
+
+# Create a list of options for the dropdown
+options2 = qtd_jira["Projeto"]
+
+# Create the dropdown menu
+selected_option2 = st.selectbox('Projetos', options2)
+category = pd.DataFrame()
+category["Categoria"] = jira[jira["Chave do projeto"] == selected_option2]["Campo personalizado (Categoria)"].value_counts().index
+category["Quantidade"] = jira[jira["Chave do projeto"] == selected_option2]["Campo personalizado (Categoria)"].value_counts().values
+
+fig2 = px.bar(category[category['Quantidade']>10], x='Categoria', y='Quantidade')
+fig2.update_traces(marker_color='lightskyblue', selector=dict(type='bar'))
+
+st.markdown("### Categorias por Projeto")
+st.markdown("Selecione o Projeto e visualize as pricipais categorias das issues.")
+st.plotly_chart(fig2)
+
