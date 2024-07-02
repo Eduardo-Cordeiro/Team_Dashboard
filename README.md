@@ -8,6 +8,7 @@ Extracting data from Zendesk and Jira and building a dashboard for a Customer Su
 - A viem on productivity compare to other teams.
 - Complexity analysis
 - Segmentation between products
-- Present the amount of jira issues
-- Segment the areas of the issues
+- Present the amount of jira issues ☑️
+- Segment the areas of the issues ☑️
+- Segment the main categories of the projects ☑️
 - A take on invalid issues
