@@ -48,4 +48,4 @@ for i, project in enumerate(qtd_jira['Projeto']):
 
     # Display the table based on the visibility state
     if st.session_state[f'show_{project}']:
-        st.dataframe(jira[jira["Chave do projeto"] == project][["Chave do item","Prioridade","Solicitante","Criado"]],hide_index=True,use_container_width=True)
+        st.dataframe(jira[jira["Chave do projeto"] == project][["Chave do item","Solicitante","Prioridade","Criado"]],hide_index=True,use_container_width=True)
