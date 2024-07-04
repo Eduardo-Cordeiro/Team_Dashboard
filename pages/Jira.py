@@ -11,21 +11,14 @@ response1.raise_for_status()
 csv_content1 = response1.text
 jira = pd.read_csv(StringIO(csv_content1), delimiter=',')
 jira["Chave do projeto"] = jira["Chave do projeto"].apply(lambda x: "PHON" if x == "PHONE" else x) 
-st.title("Jira Dashboard")
 
 # Create the initial bar chart
 qtd_jira = pd.DataFrame()
 qtd_jira['Projeto'] = jira['Chave do projeto'].value_counts().index
 qtd_jira['Quantidade'] = jira['Chave do projeto'].value_counts().values
-fig = px.bar(qtd_jira, x='Projeto', y='Quantidade', title='Distribuição dos Projetos')
+fig = px.bar(qtd_jira, x='Projeto', y='Quantidade')
 fig.update_traces(marker_color='lightskyblue', selector=dict(type='bar'))
 
-# Display the initial bar chart
-st.plotly_chart(fig)
-
-# Buttons title
-st.markdown("### Dataframes por Projeto")
-st.markdown("Selecione o Projeto e visualize as pricipais informações sobre as issues.")
 
 # Initialize session state for each project's table visibility
 for project in qtd_jira['Projeto']:
@@ -36,25 +29,25 @@ for project in qtd_jira['Projeto']:
 # Create a list of options for the dropdown
 options = qtd_jira['Projeto']
 
-# Create the dropdown menu
-selected_option = st.selectbox('Projetos:', options)
-
-# Display the selected option
-st.dataframe(jira[jira["Chave do projeto"] == selected_option][["Chave do item","Solicitante","Prioridade","Criado"]],hide_index=True,use_container_width=True)
-
 # Main categories per project
 
 # Create a list of options for the dropdown
 options2 = qtd_jira["Projeto"]
 
-# Create the dropdown menu
+st.title("Jira Dashboard")
+st.plotly_chart(fig)
+st.markdown("### Dataframes por Projeto")
+st.markdown("Selecione o Projeto e visualize as pricipais informações sobre as issues.")
+selected_option = st.selectbox('Projetos:', options)
+st.dataframe(jira[jira["Chave do projeto"] == selected_option][["Chave do item","Solicitante","Prioridade","Criado"]],hide_index=True,use_container_width=True)
+
 selected_option2 = st.selectbox('Projetos', options2)
 category = pd.DataFrame()
 category["Categoria"] = jira[jira["Chave do projeto"] == selected_option2]["Campo personalizado (Categoria)"].value_counts().index
 category["Quantidade"] = jira[jira["Chave do projeto"] == selected_option2]["Campo personalizado (Categoria)"].value_counts().values
 fig2 = px.bar(category.head(15), x='Categoria', y='Quantidade')
-fig2.update_traces(marker_color='lightskyblue', selector=dict(type='bar'))
 
+fig2.update_traces(marker_color='lightskyblue', selector=dict(type='bar'))
 st.markdown("### Categorias por Projeto")
 st.markdown("Selecione o Projeto e visualize as pricipais categorias das issues.")
 st.plotly_chart(fig2)
