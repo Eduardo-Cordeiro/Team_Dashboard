@@ -4,6 +4,8 @@ from io import StringIO
 import streamlit as st
 import plotly.express as px
 from datetime import datetime, timedelta
+import numpy as np
+import matplotlib.pyplot as plt
 
 # Load data from URL
 url1 = 'https://raw.githubusercontent.com/Eduardo-Cordeiro/Team_Dashboard/main/Zendesk_Data.csv'
@@ -14,6 +16,25 @@ zendesk = pd.read_csv(StringIO(csv_content1), delimiter=',')
 
 zendesk["Creation Date"] = pd.to_datetime(zendesk["Creation Date"])
 zendesk['Last Update Date'] = pd.to_datetime(zendesk['Last Update Date'])
+
+num1 = np.random.uniform(-0.2, 0.2)
+num2 = np.random.uniform(-0.2, 0.2)        
+num3 = -(num1 + num2)
+
+team = []
+size = len(zendesk["Agent"])
+for i in range(0,size,1):
+    if i < ((size/3) + (size/3)*num1):
+        team.append('A')
+    elif (i>((size/3) + (size/3)*num1)) and i < (2*(size/3) + 2*(size/3)*num2):
+        team.append('B')
+    else:
+        team.append('C')
+
+zendesk["Team"] = team
+
+print(zendesk["Team"])
+print(zendesk["Team"].value_counts())
 
 st.title("Zendesk Dashboard")
 days_to_subtract = timedelta(days=31)
@@ -32,3 +53,17 @@ zen_categoria["Quantidade"] = zendesk["Categoria"].value_counts().values
 # Display the selected option
 fig3 = px.bar(zen_categoria.head(20),x="Categoria",y="Quantidade",title="20 pricipais categorias dos atendimentos realizados")
 st.plotly_chart(fig3)
+
+# Title of the Streamlit app
+st.title('Tickets atendidos por time')
+
+# Plotting the pie chart
+fig4, ax = plt.subplots()
+ax.pie(zendesk["Team"].value_counts().values, labels=zendesk["Team"].value_counts().index, autopct='%1.1f%%', startangle=90, textprops={'color': 'white'})
+ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+
+# Display the pie chart in Streamlit
+fig4.savefig('transparent_pie_chart.png', transparent=True)
+
+# Load and display the transparent pie chart in Streamlit
+st.image('transparent_pie_chart.png')
