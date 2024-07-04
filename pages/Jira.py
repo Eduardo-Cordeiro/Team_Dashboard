@@ -35,6 +35,7 @@ options = qtd_jira['Projeto']
 options2 = qtd_jira["Projeto"]
 
 st.title("Jira Dashboard")
+st.markdown("### Quantidade de chamados por Projeto")
 st.plotly_chart(fig)
 st.markdown("### Dataframes por Projeto")
 st.markdown("Selecione o Projeto e visualize as pricipais informações sobre as issues.")
