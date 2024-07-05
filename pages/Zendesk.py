@@ -17,9 +17,6 @@ zendesk = pd.read_csv(StringIO(csv_content1), delimiter=',')
 zendesk["Creation Date"] = pd.to_datetime(zendesk["Creation Date"])
 zendesk['Last Update Date'] = pd.to_datetime(zendesk['Last Update Date'])
 
-
-
-
 num1 = np.random.uniform(-0.2, 0.2)
 num2 = np.random.uniform(-0.2, 0.2)        
 num3 = -(num1 + num2)
