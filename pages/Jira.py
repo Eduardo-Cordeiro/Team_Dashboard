@@ -19,6 +19,17 @@ qtd_jira['Quantidade'] = jira['Chave do projeto'].value_counts().values
 fig = px.bar(qtd_jira, x='Projeto', y='Quantidade')
 fig.update_traces(marker_color='lightskyblue', selector=dict(type='bar'))
 
+col1, col2, col3, col4 = st.columns([1,1,1,1])
+
+with col1:
+    st.multiselect('Projeto', [1,2,3])
+with col2:
+    st.multiselect('Satisfaçao', ['Good','Bad'])
+with col3:
+    st.date_input('Data Inicial')
+with col4:
+    st.date_input('Data Final')
+
 
 # Initialize session state for each project's table visibility
 for project in qtd_jira['Projeto']:
