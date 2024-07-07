@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Load data from URL
+# %%
 url1 = 'https://raw.githubusercontent.com/Eduardo-Cordeiro/Team_Dashboard/main/Zendesk_Data.csv'
 response1 = requests.get(url1)
 response1.raise_for_status()
@@ -16,7 +17,7 @@ zendesk = pd.read_csv(StringIO(csv_content1), delimiter=',')
 
 zendesk["Creation Date"] = pd.to_datetime(zendesk["Creation Date"])
 zendesk['Last Update Date'] = pd.to_datetime(zendesk['Last Update Date'])
-
+zendesk["Unidade"] = 1
 num1 = np.random.uniform(-0.2, 0.2)
 num2 = np.random.uniform(-0.2, 0.2)        
 num3 = -(num1 + num2)
@@ -33,8 +34,12 @@ for i in range(0,size,1):
 
 zendesk["Team"] = team
 
-print(zendesk["Team"])
-print(zendesk["Team"].value_counts())
+good = zendesk[zendesk["Satisfação"] == 'Good'].groupby("Team")['Unidade'].sum()
+print(good)
+
+bad = zendesk[zendesk["Satisfação"] == 'Bad'].groupby("Team")['Unidade'].sum()
+print(bad)
+
 times = zendesk.groupby('Team')["Agent"].value_counts()
 members_per_team = [len(times.xs("A", level="Team")),len(times.xs("B", level="Team")),len(times.xs("C", level="Team"))]
 
@@ -43,40 +48,31 @@ zendesk_teams["Team"] = zendesk["Team"].value_counts().index
 zendesk_teams["Quantidade"] = zendesk["Team"].value_counts().values
 zendesk_teams["Membros"] = members_per_team
 zendesk_teams["Tickets por agente"] = zendesk_teams["Quantidade"] / zendesk_teams["Membros"]
-print(zendesk_teams)
+zendesk_teams["Bom"] = good.values
+zendesk_teams["Ruim"] = bad.values
+zendesk_teams["Unoffered"] = zendesk_teams["Quantidade"] - (zendesk_teams["Bom"] + zendesk_teams["Ruim"])
+
+print(zendesk_teams.head(20))
 
 st.title("Zendesk Dashboard")
 days_to_subtract = timedelta(days=31)
 
-st.markdown(f'Tickets nos últimos 30 dias: {len(zendesk[zendesk["Creation Date"] > (zendesk["Creation Date"].max() - days_to_subtract)])}')
+col1, col2, col3, col4 = st.columns([1,1,1,1])
 
-days_to_subtract2 = timedelta(days=7)
+with col1:
+    st.multiselect('Projeto', zendesk_teams['Team'])
+with col2:
+    st.multiselect('Satisfação', ['Good','Bad','Unoffered','All'])
+with col3:
+    st.date_input('Data Inicial')
+with col4:
+    st.date_input('Data Final')
 
-st.markdown(f'Tickets nos últimos 7 dias: {len(zendesk[zendesk["Creation Date"] > (zendesk["Creation Date"].max() - days_to_subtract2)])}')
 
-zen_categoria = pd.DataFrame()
-zen_categoria["Categoria"] = zendesk["Categoria"].value_counts().index
-zen_categoria["Quantidade"] = zendesk["Categoria"].value_counts().values
+color_vars = ["Bom","Ruim"]
+if color_vars:
+    zendesk_teams['Composite_Color'] = zendesk_teams[color_vars].astype(str).agg('-'.join, axis=1)
+    color_var = 'Composite_Color'
 
-st.markdown('### 20 Principais categorias dos atendimentos.')
-# Display the selected option
-fig3 = px.bar(zen_categoria.head(20),x="Categoria",y="Quantidade")
-st.plotly_chart(fig3)
-
-# Title of the Streamlit app
-st.markdown('### Tickets atendidos por time')
-
-# Plotting the pie chart
-fig4, ax = plt.subplots()
-ax.pie(zendesk_teams["Tickets por agente"], labels=zendesk_teams["Team"], autopct='%1.1f%%', startangle=90, textprops={'color': 'white'})
-ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-
-# Display the pie chart in Streamlit
-fig4.savefig('transparent_pie_chart.png', transparent=True)
-
-# Load and display the transparent pie chart in Streamlit
-st.image('transparent_pie_chart.png')
-
-fig5 = px.bar(zendesk_teams,x = 'Team', y = "Tickets por agente")
-fig5.update_traces(marker_color='lightskyblue', selector=dict(type='bar'))
-st.plotly_chart(fig5)
+fig = px.bar(zendesk_teams,x='Team',y='Quantidade', color=color_var,barmode='stack')
+st.plotly_chart(fig)
