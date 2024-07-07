@@ -69,10 +69,7 @@ with col4:
     st.date_input('Data Final')
 
 
-color_vars = ["Bom","Ruim"]
-if color_vars:
-    zendesk_teams['Composite_Color'] = zendesk_teams[color_vars].astype(str).agg('-'.join, axis=1)
-    color_var = 'Composite_Color'
-
-fig = px.bar(zendesk_teams,x='Team',y='Quantidade', color=color_var,barmode='stack')
+fig = px.bar(zendesk_teams,x='Team',y=['Unoffered','Bom','Ruim'],barmode='stack')
 st.plotly_chart(fig)
+
+print(len(zendesk))
