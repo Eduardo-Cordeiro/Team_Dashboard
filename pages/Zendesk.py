@@ -33,27 +33,30 @@ for i in range(0,size,1):
         team.append('C')
 zendesk["Team"] = team
 
+min_date = zendesk["Creation Date"].min().date()
+max_date = zendesk["Creation Date"].max().date()
+
+st.title("Zendesk Dashboard")
+
+col1, col2 = st.columns([1,1])
+
+with col1:
+    time_selected = st.multiselect('Time', ["A",'B','C'],default=["A", "B", "C"])
+    start = st.date_input('Data Inicial',min_value=min_date, max_value=max_date, value=min_date)
+with col2:
+    satis = st.multiselect('Satisfação', ['Bom','Ruim','Unoffered'],default=['Unoffered','Bom','Ruim'])
+    end = st.date_input('Data Final',min_value=min_date, max_value=max_date, value=max_date)
+
+zendesk = zendesk[(zendesk["Creation Date"] >= pd.Timestamp(start)) & (zendesk["Creation Date"] <= pd.Timestamp(end))]
+
 good = zendesk[zendesk["Satisfação"] == 'Good'].groupby("Team")['Unidade'].sum()
 bad = zendesk[zendesk["Satisfação"] == 'Bad'].groupby("Team")['Unidade'].sum()
 times = zendesk.groupby('Team')["Agent"].value_counts()
 members_per_team = [len(times.xs("A", level="Team")),len(times.xs("B", level="Team")),len(times.xs("C", level="Team"))]
 
 
-st.title("Zendesk Dashboard")
-
-col1, col2, col3, col4 = st.columns([1,1,1,1])
-
-with col1:
-    projetos = st.multiselect('Time', zendesk["Team"].value_counts().index)
-with col2:
-    satis = st.multiselect('Satisfação', ['Bom','Ruim','Unoffered','All'])
-with col3:
-    start = st.date_input('Data Inicial')
-with col4:
-    end = st.date_input('Data Final')
-
-
 zendesk_teams = pd.DataFrame()
+
 zendesk_teams["Team"] = zendesk["Team"].value_counts().index
 zendesk_teams["Quantidade"] = zendesk["Team"].value_counts().values
 zendesk_teams["Membros"] = members_per_team
@@ -61,8 +64,8 @@ zendesk_teams["Tickets por agente"] = zendesk_teams["Quantidade"] / zendesk_team
 zendesk_teams["Bom"] = good.values
 zendesk_teams["Ruim"] = bad.values
 zendesk_teams["Unoffered"] = zendesk_teams["Quantidade"] - (zendesk_teams["Bom"] + zendesk_teams["Ruim"])
+a = zendesk_teams[zendesk_teams["Team"].isin(time_selected)]
 
 
-fig = px.bar(zendesk_teams,x='Team',y=satis,barmode='stack')
+fig = px.bar(a,x='Team',y=satis,barmode='stack')
 st.plotly_chart(fig)
-
