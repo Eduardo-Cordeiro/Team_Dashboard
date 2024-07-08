@@ -69,3 +69,5 @@ a = zendesk_teams[zendesk_teams["Team"].isin(time_selected)]
 
 fig = px.bar(a,x='Team',y=satis,barmode='stack')
 st.plotly_chart(fig)
+
+
