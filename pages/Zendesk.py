@@ -31,17 +31,27 @@ for i in range(0,size,1):
         team.append('B')
     else:
         team.append('C')
-
 zendesk["Team"] = team
 
 good = zendesk[zendesk["Satisfação"] == 'Good'].groupby("Team")['Unidade'].sum()
-print(good)
-
 bad = zendesk[zendesk["Satisfação"] == 'Bad'].groupby("Team")['Unidade'].sum()
-print(bad)
-
 times = zendesk.groupby('Team')["Agent"].value_counts()
 members_per_team = [len(times.xs("A", level="Team")),len(times.xs("B", level="Team")),len(times.xs("C", level="Team"))]
+
+
+st.title("Zendesk Dashboard")
+
+col1, col2, col3, col4 = st.columns([1,1,1,1])
+
+with col1:
+    projetos = st.multiselect('Time', zendesk["Team"].value_counts().index)
+with col2:
+    satis = st.multiselect('Satisfação', ['Bom','Ruim','Unoffered','All'])
+with col3:
+    start = st.date_input('Data Inicial')
+with col4:
+    end = st.date_input('Data Final')
+
 
 zendesk_teams = pd.DataFrame()
 zendesk_teams["Team"] = zendesk["Team"].value_counts().index
@@ -52,24 +62,7 @@ zendesk_teams["Bom"] = good.values
 zendesk_teams["Ruim"] = bad.values
 zendesk_teams["Unoffered"] = zendesk_teams["Quantidade"] - (zendesk_teams["Bom"] + zendesk_teams["Ruim"])
 
-print(zendesk_teams.head(20))
 
-st.title("Zendesk Dashboard")
-days_to_subtract = timedelta(days=31)
-
-col1, col2, col3, col4 = st.columns([1,1,1,1])
-
-with col1:
-    st.multiselect('Projeto', zendesk_teams['Team'])
-with col2:
-    st.multiselect('Satisfação', ['Good','Bad','Unoffered','All'])
-with col3:
-    st.date_input('Data Inicial')
-with col4:
-    st.date_input('Data Final')
-
-
-fig = px.bar(zendesk_teams,x='Team',y=['Unoffered','Bom','Ruim'],barmode='stack')
+fig = px.bar(zendesk_teams,x='Team',y=satis,barmode='stack')
 st.plotly_chart(fig)
 
-print(len(zendesk))
