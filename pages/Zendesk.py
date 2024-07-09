@@ -37,6 +37,7 @@ zendesk["Team"] = team
 min_date = zendesk["Creation Date"].min().date()
 max_date = zendesk["Creation Date"].max().date()
 
+
 st.title("Zendesk Dashboard")
 
 col1, col2 = st.columns([1,1])
@@ -66,7 +67,7 @@ a = zendesk_teams[zendesk_teams["Team"].isin(time_selected)]
 
 # Displaying Teams Chart
 st.markdown("")
-st.markdown("#### Quantidade de Atendimentos por Time e Satisfação.") 
+st.markdown("#### Quantidade de Atendimentos por Time e Satisfação") 
 fig = px.bar(a,x='Team',y=satis,barmode='stack')
 st.plotly_chart(fig)
 
@@ -75,5 +76,9 @@ category = b["Categoria"].value_counts()
 category = category.reset_index()
 print(category.head())
 
-fig2 = px.bar(category, x='count',y="Categoria",barmode='stack')
+st.markdown("#### 15 Principais Categorias") 
+fig2 = px.bar(category.head(15), x='count',y="Categoria",barmode='stack')
 st.plotly_chart(fig2)
+
+st.markdown("#### Tickets DataFrame") 
+st.dataframe(b[["Ticket ID",'Client ID','Ticket Status','Agent','Categoria','Creation Date']], hide_index=True)
