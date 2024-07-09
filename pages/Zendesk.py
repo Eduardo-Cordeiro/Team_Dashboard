@@ -17,6 +17,7 @@ zendesk = pd.read_csv(StringIO(csv_content1), delimiter=',')
 zendesk["Creation Date"] = pd.to_datetime(zendesk["Creation Date"])
 zendesk['Last Update Date'] = pd.to_datetime(zendesk['Last Update Date'])
 zendesk["Unidade"] = 1
+zendesk["NoUpdate"] = zendesk["Last Update Date"] - zendesk["Creation Date"]
 
 #Randomizing teams
 num1 = np.random.uniform(-0.2, 0.2)
