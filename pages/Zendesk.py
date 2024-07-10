@@ -17,7 +17,7 @@ zendesk = pd.read_csv(StringIO(csv_content1), delimiter=',')
 zendesk["Creation Date"] = pd.to_datetime(zendesk["Creation Date"])
 zendesk['Last Update Date'] = pd.to_datetime(zendesk['Last Update Date'])
 zendesk["Unidade"] = 1
-zendesk["NoUpdate"] = zendesk["Last Update Date"] - zendesk["Creation Date"]
+zendesk["NoUpdate"] = zendesk["Creation Date"].max() - zendesk["Last Update Date"]
 
 #Randomizing teams
 num1 = np.random.uniform(-0.2, 0.2)
@@ -75,7 +75,6 @@ st.plotly_chart(fig)
 b = zendesk[(zendesk["Team"].isin(time_selected)) & (zendesk["Satisfação"].isin(satis))]
 category = b["Categoria"].value_counts()
 category = category.reset_index()
-print(category.head())
 
 st.markdown("#### 15 Principais Categorias") 
 fig2 = px.bar(category.head(15), x='count',y="Categoria",barmode='stack')
@@ -83,3 +82,19 @@ st.plotly_chart(fig2)
 
 st.markdown("#### Tickets DataFrame") 
 st.dataframe(b[["Ticket ID",'Client ID','Ticket Status','Agent','Categoria','Creation Date']], hide_index=True)
+
+c = pd.DataFrame()
+c["Status"] = b[b["Ticket Status"].isin(["Hold","Pending","Open"])]["Ticket Status"].value_counts().index
+c["Qty"] = b[b["Ticket Status"].isin(["Hold","Pending","Open"])]["Ticket Status"].value_counts().values
+c["TimeNoUpdate"] = zendesk[zendesk["Ticket Status"].isin(["Hold","Pending","Open"])].groupby("Ticket Status")["NoUpdate"].mean().values
+
+c['TimeNoUpdate'] = pd.to_timedelta(c['TimeNoUpdate'])
+
+# Extract days
+c['Dias'] = c['TimeNoUpdate'].dt.days
+
+#c = b[b["Ticket Status"].isin(["Hold","Pending","Open"])]["Ticket Status"].value_counts()
+
+fig3 = px.bar(c, x="Qty",y="Status",barmode='stack')
+st.markdown("#### Atualização Tickets Backlog")
+st.plotly_chart(fig3)
