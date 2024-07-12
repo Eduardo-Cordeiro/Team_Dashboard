@@ -28,8 +28,12 @@ with col1:
 with col2:
     satis = st.multiselect('Prioridade', ['Lowest','Low','Medium','High','Highest'],default=['Lowest','Low','Medium','High','Highest'])
     end = st.date_input('Data Final',min_value=min_date, max_value=max_date, value=max_date)
-
+jira["Index"] = jira["Unnamed: 0"].astype(str)
+jira = jira.drop(columns=['Unnamed: 0'])
+jira["ID do item"] = jira["ID do item"].astype(str)
+jira["Campo personalizado (Client ID)"] = jira["Campo personalizado (Client ID)"].astype(str)
 jira = jira[(jira["Chave do projeto"].isin(proj_selected)) & (jira["Prioridade"].isin(satis)) & (jira["Criado"] > pd.Timestamp(start)) & (jira["Criado"] < pd.Timestamp(end)) ]
+
 # Create the initial bar chart
 qtd_jira = pd.DataFrame()
 qtd_jira['Projeto'] = jira['Chave do projeto'].value_counts().index
